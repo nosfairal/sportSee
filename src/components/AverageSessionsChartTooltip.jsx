@@ -11,7 +11,7 @@ const CustomTooltip = styled.div`
 `;
 
 export default function AverageSessionsChartTooltip({ active, payload }) {
-    if (active) {
+    if (active && payload && payload.length > 0) {
         return <CustomTooltip>{payload[0].value} min</CustomTooltip>;
     }
     return null;

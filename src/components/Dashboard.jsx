@@ -4,7 +4,7 @@ import caloriesIcon from "../assets/icon-calories.svg";
 import proteinsIcon from "../assets/icon-proteins.svg";
 import carbsIcon from "../assets/icon-carbs.svg";
 import lipidsIcon from "../assets/icon-lipids.svg";
-import PropTypes from "prop-types";
+import { useParams } from "react-router-dom";
 
 import { getUserInfos } from "../services/api";
 import PerformanceChart from "./PerformanceChart";
@@ -73,38 +73,49 @@ const SmallChartsContainer = styled.div`
 /**
  * Display User infos and datas
  */
-export default function Dashboard({ match }) {
-    const [data, setData] = useState([]);
-    const [score, setScore] = useState([]);
-    const { userInfos, keyData } = data;
-    const id = match.params.id;
+export default function Dashboard() {
+    const { id } = useParams();
+    const [isLoading, setIsLoading] = useState(true);
+    const [data, setData] = useState(null);
+    const [error, setError] = useState(null);
+
     useEffect(() => {
-        const getData = async () => {
-            const request = await getUserInfos(id);
-            setData(request.data);
-            setScore([
-                { score: request.data.todayScore || request.data.score },
-                {
-                    score:
-                        1 - request.data.todayScore || 1 - request.data.score,
-                },
-            ]);
+        const fetchData = async () => {
+            try {
+                const response = await getUserInfos(id);
+                const responseData = response.data ? response.data : response;
+                setData(responseData);
+                setIsLoading(false);
+            } catch (err) {
+                setError(err);
+                setIsLoading(false);
+            }
         };
-        getData();
+
+        fetchData();
     }, [id]);
 
-    /**
-     * Catch if return null
-     */
+    if (isLoading) {
+        return <p>Chargement...</p>;
+    }
 
-    if (data.length === 0) return null;
+    if (error) {
+        return <p>Erreur lors de la récupération des données. Veuillez réessayer plus tard.</p>;
+    }
+
+    if (!data || !data.userInfos || !data.keyData) {
+        return <p>Données non disponibles.</p>;
+    }
+
+    const score = [
+        { score: data.userInfos?.todayScore || data.userInfos?.score || 0 },
+        { score: 1 - (data.userInfos?.todayScore || data.userInfos?.score || 0) },
+    ];
 
     return (
         <Container>
             <Header>
-                <h1>
-                    Bonjour <span>{userInfos.firstName}</span>
-                </h1>
+                <h1>Bonjour <span>{data.userInfos.firstName}</span></h1>
                 <p>Félicitations ! Vous avez explosé vos objectifs hier 👏</p>
             </Header>
             <ChartsContainer>
@@ -117,43 +128,12 @@ export default function Dashboard({ match }) {
                     </SmallChartsContainer>
                 </div>
                 <aside>
-                    <KeyInfos
-                        data={keyData.calorieCount}
-                        unit="kCal"
-                        image={caloriesIcon}
-                        color="rgba(255, 0, 0, 0.1)"
-                        text="Calories"
-                    />
-                    <KeyInfos
-                        data={keyData.proteinCount}
-                        unit="g"
-                        image={proteinsIcon}
-                        color="rgba(74, 184, 255, 0.1)"
-                        text="Proteines"
-                    />
-                    <KeyInfos
-                        data={keyData.carbohydrateCount}
-                        unit="g"
-                        image={carbsIcon}
-                        color="rgba(249, 206, 35, 0.1)"
-                        text="Glucides"
-                    />
-                    <KeyInfos
-                        data={keyData.lipidCount}
-                        unit="g"
-                        image={lipidsIcon}
-                        color="rgba(253, 81, 129, 0.1)"
-                        text="Lipides"
-                    />
+                    <KeyInfos data={data.keyData.calorieCount} unit="kCal" image={caloriesIcon} color="rgba(255, 0, 0, 0.1)" text="Calories" />
+                    <KeyInfos data={data.keyData.proteinCount} unit="g" image={proteinsIcon} color="rgba(74, 184, 255, 0.1)" text="Proteines" />
+                    <KeyInfos data={data.keyData.carbohydrateCount} unit="g" image={carbsIcon} color="rgba(249, 206, 35, 0.1)" text="Glucides" />
+                    <KeyInfos data={data.keyData.lipidCount} unit="g" image={lipidsIcon} color="rgba(253, 81, 129, 0.1)" text="Lipides" />
                 </aside>
             </ChartsContainer>
         </Container>
     );
 }
-
-/**
- * PropTypes : Object is required
- */
-Dashboard.propTypes = {
-    match: PropTypes.object.isRequired,
-};

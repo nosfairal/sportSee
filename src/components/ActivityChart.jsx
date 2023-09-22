@@ -61,27 +61,27 @@ export default function ActivityChart({ id }) {
      * Display User activity
      */
     const [data, setData] = useState([]);
-
     useEffect(() => {
         const getData = async () => {
-            const request = await getUserActivity(id);
+            try {
+                const request = await getUserActivity(id);
 
-            /**
-             * Format date on XAxis
-             */
-            for (
-                let i = 0, length = request.data.sessions.length;
-                i < length;
-                i++
-            ) {
-                request.data.sessions[i] = {
-                    ...request.data.sessions[i],
-                    day: i + 1,
-                };
+                if (request && Array.isArray(request.sessions)) {
+                    for (let i = 0, length = request.sessions.length; i < length; i++) {
+                        request.sessions[i] = {
+                            ...request.sessions[i],
+                            day: i + 1,
+                        };
+                    }
+                    setData(request.sessions);
+                } else {
+                    console.error('Invalid data received:', request);
+                }
+            } catch (error) {
+                console.error("Error fetching user activity:", error);
             }
-            setData(request.data.sessions);
         };
-        getData();
+        getData()
     }, [id]);
 
     /**
@@ -124,7 +124,7 @@ export default function ActivityChart({ id }) {
                     <XAxis dataKey="day" axisLine={false} tickLine={false} />
                     <YAxis
                         yAxisId="kg"
-                        datakey="kilogram"
+                        dataKey="kilogram"
                         orientation="right"
                         domain={[minYKg, maxYKg]}
                         tickCount={4}
@@ -133,7 +133,7 @@ export default function ActivityChart({ id }) {
                     />
                     <YAxis
                         yAxisId="cal"
-                        datakey="calories"
+                        dataKey="calories"
                         hide={true}
                         domain={[minYCal, maxYCal]}
                     />
