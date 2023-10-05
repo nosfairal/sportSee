@@ -8,6 +8,7 @@ import {
 } from "recharts";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import dataMock from "../services/dataMock.json";
 
 import { getUserPerformance } from "../services/api.js";
 
@@ -22,28 +23,41 @@ const Container = styled.div`
 /**
  * Display User performances
  */
+
 export default function PerformanceChart({ id }) {
     const [data, setData] = useState([]);
 
     useEffect(() => {
         const getData = async () => {
-            const request = await getUserPerformance(id);
-            /**
-             * Format Data and put in caps the first letter of each
-             */
-            for (let i = 0, size = request.data.data.length; i < size; i++) {
-                request.data.data[i] = {
-                    ...request.data.data[i],
-                    kind:
-                        request.data.kind[request.data.data[i].kind]
-                            .charAt(0)
-                            .toUpperCase() +
-                        request.data.kind[request.data.data[i].kind].slice(1),
-                };
-            }
+            try {
+                const userPerformance = await getUserPerformance(id);
 
-            setData(request.data.data);
+                if (!userPerformance || !Array.isArray(userPerformance.performances)) {
+                    console.error("performanceData is not defined or not an array.");
+                    return;
+                }
+
+                const formattedData = userPerformance.performances.map(item => {
+                    const kindKey = item.kind.toString();
+                    const matchedUser = dataMock.USER_PERFORMANCE.find(perf => perf.userId === Number(id));
+                    const kindTranslations = matchedUser ? matchedUser.kind : {};
+                    if (kindTranslations && kindTranslations[kindKey]) {
+                        return {
+                            ...item,
+                            kind: kindTranslations[kindKey].charAt(0).toUpperCase() + kindTranslations[kindKey].slice(1)
+                        };
+                    } else {
+                        console.warn(`Kind key ${kindKey} not found in request.kind`);
+                        return item;
+                    }
+                });
+
+                setData(formattedData);
+            } catch (error) {
+                console.error("Error while fetching user performance: ", error);
+            }
         };
+
         getData();
     }, [id]);
 
@@ -69,7 +83,6 @@ export default function PerformanceChart({ id }) {
         </Container>
     );
 }
-
 
 /**
  * PropTypes: String is required

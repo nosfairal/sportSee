@@ -64,24 +64,20 @@ export default function ActivityChart({ id }) {
     useEffect(() => {
         const getData = async () => {
             try {
-                const request = await getUserActivity(id);
+                const activityInstance = await getUserActivity(id);
 
-                if (request && Array.isArray(request.sessions)) {
-                    for (let i = 0, length = request.sessions.length; i < length; i++) {
-                        request.sessions[i] = {
-                            ...request.sessions[i],
-                            day: i + 1,
-                        };
-                    }
-                    setData(request.sessions);
-                } else {
-                    console.error('Invalid data received:', request);
+                if (!activityInstance || !Array.isArray(activityInstance.sessions)) {
+                    console.error("Activity data is not defined or not an array.");
+                    return;
                 }
+
+                setData(activityInstance.sessions);
             } catch (error) {
-                console.error("Error fetching user activity:", error);
+                console.error("Error while fetching user activity: ", error);
             }
         };
-        getData()
+
+        getData();
     }, [id]);
 
     /**

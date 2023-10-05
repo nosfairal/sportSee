@@ -1,8 +1,12 @@
 import axios from "axios";
 import dataMock from "./dataMock.json";
+import User from "../entity/User";
+import UserPerformance from "../entity/UserPerformance";
+import UserActivity from "../entity/UserActivity";
+import UserAverageSessions from '../entity/UserAverageSessions';
 
 /* True/false for mocking data from JSON */
-const isMocked = true;
+export const isMocked = true;
 console.log("Mocked data = " + isMocked);
 
 const instance = axios.create({ baseURL: "http://localhost:3000/user" });
@@ -12,15 +16,20 @@ const instance = axios.create({ baseURL: "http://localhost:3000/user" });
  */
 export const getUserInfos = async (id) => {
 	try {
-		if (isMocked) {
-			const user = dataMock.USER_MAIN_DATA.find(user => user.id === Number(id));
+		let userData;
 
-			return user || null;
+		if (isMocked) {
+			userData = dataMock.USER_MAIN_DATA.find(user => user.id === Number(id));
+			console.log("Mocked User Data:", userData);
 		} else {
 			const res = await instance.get(`/${id}`);
-			return res.data;
+			userData = res.data;
 		}
+
+		return userData ? new User(userData) : null;
+
 	} catch (e) {
+		alert("Erreur lors de la récupération des informations de l'utilisateur. Veuillez réessayer.");
 		console.error("Error fetching user info:", e);
 	}
 };
@@ -30,30 +39,41 @@ export const getUserInfos = async (id) => {
  */
 export const getUserPerformance = async (id) => {
 	try {
+		let performanceData;
+
 		if (isMocked) {
-			const performance = dataMock.USER_PERFORMANCE.find(perf => perf.userId === Number(id));
-			return performance || null;
+			const matchedUser = dataMock.USER_PERFORMANCE.find(perf => perf.userId === Number(id));
+			performanceData = matchedUser ? matchedUser.data : null;
 		} else {
 			const res = await instance.get(`/${id}/performance`);
-			return res.data;
+			performanceData = res.data;
 		}
+
+		return performanceData ? new UserPerformance(performanceData) : null;
+
 	} catch (e) {
+		alert("Erreur lors de la récupération des performances de l'utilisateur. Veuillez réessayer.");
 		console.error("Error fetching user performance:", e);
 	}
-};
+}
+
 
 /**
  * Get user activity from the API
  */
 export const getUserActivity = async (id) => {
 	try {
+		let activityData;
+
 		if (isMocked) {
-			const activity = dataMock.USER_ACTIVITY.find(act => act.userId === Number(id));
-			return activity || null;
+			activityData = dataMock.USER_ACTIVITY.find(act => act.userId === Number(id));
 		} else {
 			const res = await instance.get(`/${id}/activity`);
-			return res.data;
+			activityData = res.data;
 		}
+
+		return activityData ? new UserActivity(activityData) : null;
+
 	} catch (e) {
 		console.error("Error fetching user activity:", e);
 	}
@@ -65,11 +85,11 @@ export const getUserActivity = async (id) => {
 export const getUserAverageSessions = async (id) => {
 	try {
 		if (isMocked) {
-			const avgSessions = dataMock.USER_AVERAGE_SESSIONS.find(sess => sess.userId === Number(id));
-			return avgSessions || null;
+			const avgSessionsData = dataMock.USER_AVERAGE_SESSIONS.find(sess => sess.userId === Number(id));
+			return avgSessionsData ? new UserAverageSessions(avgSessionsData) : null;
 		} else {
 			const res = await instance.get(`/${id}/average-sessions`);
-			return res.data;
+			return new UserAverageSessions(res.data);
 		}
 	} catch (e) {
 		console.error("Error fetching user average sessions:", e);

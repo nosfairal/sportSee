@@ -40,35 +40,26 @@ export default function AverageSessionsChart({ id }) {
     const [data, setData] = useState([]);
 
     useEffect(() => {
+        const dayMapping = {
+            1: "L",
+            2: "M",
+            3: "M",
+            4: "J",
+            5: "V",
+            6: "S",
+            7: "D"
+        };
+
         const getData = async () => {
             const request = await getUserAverageSessions(id);
+            const formatedData = request.sessions.map(session => ({
+                ...session,
+                day: dayMapping[session.day] || session.day
+            }));
 
-            /**
-             * Format Data
-             */
-            const formatedData = request.data.sessions.map((session) => {
-                switch (session.day) {
-                    case 1:
-                        return { ...session, day: "L" };
-                    case 2:
-                        return { ...session, day: "M" };
-                    case 3:
-                        return { ...session, day: "M" };
-                    case 4:
-                        return { ...session, day: "J" };
-                    case 5:
-                        return { ...session, day: "V" };
-                    case 6:
-                        return { ...session, day: "S" };
-                    case 7:
-                        return { ...session, day: "D" };
-
-                    default:
-                        return { ...session };
-                }
-            });
             setData(formatedData);
         };
+
         getData();
     }, [id]);
 

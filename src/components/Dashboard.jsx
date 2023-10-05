@@ -82,9 +82,8 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await getUserInfos(id);
-                const responseData = response.data ? response.data : response;
-                setData(responseData);
+                const user = await getUserInfos(id);
+                setData(user);
                 setIsLoading(false);
             } catch (err) {
                 setError(err);
@@ -103,19 +102,19 @@ export default function Dashboard() {
         return <p>Erreur lors de la récupération des données. Veuillez réessayer plus tard.</p>;
     }
 
-    if (!data || !data.userInfos || !data.keyData) {
+    if (!data || !data.firstName || !data.keyData) {
         return <p>Données non disponibles.</p>;
     }
 
     const score = [
-        { score: data.userInfos?.todayScore || data.userInfos?.score || 0 },
-        { score: 1 - (data.userInfos?.todayScore || data.userInfos?.score || 0) },
+        { score: data.score || 0 },
+        { score: 1 - (data.score || 0) },
     ];
 
     return (
         <Container>
             <Header>
-                <h1>Bonjour <span>{data.userInfos.firstName}</span></h1>
+                <h1>Bonjour <span>{data.firstName}</span></h1>
                 <p>Félicitations ! Vous avez explosé vos objectifs hier 👏</p>
             </Header>
             <ChartsContainer>
