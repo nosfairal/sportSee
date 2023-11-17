@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from 'react-router-dom';
+
 import {
     RadarChart,
     PolarGrid,
@@ -7,7 +9,7 @@ import {
     ResponsiveContainer,
 } from "recharts";
 import styled from "styled-components";
-import PropTypes from "prop-types";
+//import PropTypes from "prop-types";
 import dataMock from "../services/dataMock.json";
 
 import { getUserPerformance } from "../services/api.js";
@@ -24,8 +26,9 @@ const Container = styled.div`
  * Display User performances
  */
 
-export default function PerformanceChart({ id }) {
+export default function PerformanceChart() {
     const [data, setData] = useState([]);
+    const { id } = useParams();
 
     useEffect(() => {
         const getData = async () => {
@@ -87,6 +90,6 @@ export default function PerformanceChart({ id }) {
 /**
  * PropTypes: String is required
  */
-PerformanceChart.propTypes = {
-    id: PropTypes.string.isRequired,
-};
+// PerformanceChart.propTypes = {
+//     id: PropTypes.string.isRequired,
+// };

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from 'react-router-dom';
 import styled from "styled-components";
 import {
     ResponsiveContainer,
@@ -9,7 +10,7 @@ import {
     Bar,
     CartesianGrid,
 } from "recharts";
-import PropTypes from "prop-types";
+// import PropTypes from "prop-types";
 
 import { getUserActivity } from "../services/api";
 import ActivityChartTooltip from "./ActivityChartTooltip";
@@ -56,11 +57,12 @@ const Legend = styled.div`
 	}
 `;
 
-export default function ActivityChart({ id }) {
+export default function ActivityChart() {
     /**
      * Display User activity
      */
     const [data, setData] = useState([]);
+    const { id } = useParams();
     useEffect(() => {
         const getData = async () => {
             try {
@@ -156,6 +158,6 @@ export default function ActivityChart({ id }) {
 /**
  * PropTypes: String is required
  */
-ActivityChart.propTypes = {
-    id: PropTypes.string.isRequired,
-};
+// ActivityChart.propTypes = {
+//     id: PropTypes.string.isRequired,
+// };

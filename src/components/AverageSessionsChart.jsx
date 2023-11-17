@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from 'react-router-dom';
 import {
     ResponsiveContainer,
     LineChart,
@@ -8,7 +9,7 @@ import {
     YAxis,
 } from "recharts";
 import styled from "styled-components";
-import PropTypes from "prop-types";
+// import PropTypes from "prop-types";
 
 import { getUserAverageSessions } from "../services/api";
 import AverageSessionsChartTooltip from "./AverageSessionsChartTooltip";
@@ -33,11 +34,12 @@ const Title = styled.h2`
 	color: rgba(255, 255, 255, 0.5);
 `;
 
-export default function AverageSessionsChart({ id }) {
+export default function AverageSessionsChart() {
     /**
      * Display user average sessions
      */
     const [data, setData] = useState([]);
+    const { id } = useParams();
 
     useEffect(() => {
         const dayMapping = {
@@ -114,6 +116,6 @@ export default function AverageSessionsChart({ id }) {
 /**
  * PropTypes: String is required
  */
-AverageSessionsChart.propTypes = {
-    id: PropTypes.string.isRequired,
-};
+// AverageSessionsChart.propTypes = {
+//     id: PropTypes.string.isRequired,
+// };
