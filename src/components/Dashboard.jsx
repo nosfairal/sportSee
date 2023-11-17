@@ -83,6 +83,7 @@ export default function Dashboard() {
         const fetchData = async () => {
             try {
                 const user = await getUserInfos(id);
+                console.log('userInfos', getUserInfos(id));
                 setData(user);
                 setIsLoading(false);
             } catch (err) {

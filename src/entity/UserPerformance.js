@@ -1,14 +1,24 @@
 class UserPerformance {
-    constructor(performanceArray) {
-        this.performances = performanceArray.map(data => ({
-            kind: data.kind,
-            value: data.value,
-        }));
+    constructor(performanceObj) {
+        if (performanceObj && performanceObj.data && Array.isArray(performanceObj.data.data)) {
+            const performanceData = performanceObj.data;
+            this.userId = performanceData.userId;
+            this.kindMapping = performanceData.kind;
+
+            this.performances = performanceData.data.map(perf => ({
+                kind: this.kindMapping[perf.kind],
+                value: perf.value,
+            }));
+        } else {
+            this.userId = null;
+            this.performances = [];
+        }
     }
 
-    getPerformanceByKind(kind) {
-        return this.performances.filter(performance => performance.kind === kind);
+    getPerformanceByKind(textKind) {
+        return this.performances.filter(performance => performance.kind === textKind);
     }
 }
+
 
 export default UserPerformance;

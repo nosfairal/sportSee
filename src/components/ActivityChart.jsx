@@ -67,6 +67,7 @@ export default function ActivityChart() {
         const getData = async () => {
             try {
                 const activityInstance = await getUserActivity(id);
+                console.log('vraies activités', getUserActivity(id));
 
                 if (!activityInstance || !Array.isArray(activityInstance.sessions)) {
                     console.error("Activity data is not defined or not an array.");

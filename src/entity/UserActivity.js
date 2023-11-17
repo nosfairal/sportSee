@@ -1,7 +1,7 @@
 class UserActivity {
     constructor(activityData) {
         this.userId = activityData.userId;
-        this.sessions = activityData.sessions.map(session => ({
+        this.sessions = activityData.data.sessions.map(session => ({
             day: session.day,
             kilogram: session.kilogram,
             calories: session.calories,

@@ -1,7 +1,7 @@
 class UserAverageSessions {
     constructor(sessionData) {
         this.userId = sessionData.userId;
-        this.sessions = sessionData.sessions.map(session => ({
+        this.sessions = sessionData.data.sessions.map(session => ({
             day: session.day,
             sessionLength: session.sessionLength,
         }));

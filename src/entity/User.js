@@ -1,11 +1,11 @@
 class User {
     constructor(data) {
-        this.id = data.id;
-        this.firstName = data.userInfos.firstName;
-        this.lastName = data.userInfos.lastName;
-        this.age = data.userInfos.age;
-        this.score = data.score || data.todayScore;
-        this.keyData = data.keyData;
+        this.id = data.data.id;
+        this.firstName = data.data.userInfos.firstName;
+        this.lastName = data.data.userInfos.lastName;
+        this.age = data.data.userInfos.age;
+        this.score = data.data.score || data.data.todayScore;
+        this.keyData = data.data.keyData;
     }
 
     getFullName() {
